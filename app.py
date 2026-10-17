@@ -1,46 +1,49 @@
 import streamlit as st
+import seaborn as sns
+import numpy as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Adding title of app
-st.title('My first App')
+# add title
+st.title('Data Analysis Application')
+st.subheader('This is a simple data analysis application created by Samman')
 
-# Adding simple text
-st.write('Here is the simple text')
+# create a dropdown list to choose a dataset
+dataset_options = ['tips', 'titanic', 'iris', 'diamonds']
 
-# User input
-number = st.slider('Pick a number', 0, 100, 10) # default setting after comma
+# load the data
+#df = sns.load_dataset('tips')
+selected_dataset = st.selectbox('select a dataset', dataset_options)
 
-# print text of number
-st.write(f'You selected: {number}')
+# load the selected dataset
+if selected_dataset == 'iris':
+    df = sns.load_dataset('iris')
+elif selected_dataset == 'titanic':  
+    df = sns.load_dataset('titanic')
+elif selected_dataset == 'tips':
+    df = sns.load_dataset('tips')
+elif selected_dataset == 'diamonds':    
+    df = sns.load_dataset('diamonds')
 
-# adding a button
-if st.button('Greetings'):
-    st.write('Hi,  hello there')
-else: 
-    st.write('Goodbye') 
+# button to upload custom dataset
+uploaded_file = st.file_uploader("Choose a custom dataset", type=['csv', 'xlsx'])
 
-# add radio buttons with options
-genre = st.radio(
-    "What's your favorite movie genre",
-    ('Comedy', 'Drama', 'Documentary')
-)  
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
 
-# print the text of genre
-st.write(f'You selected: {genre}')
+# display the dataset
+st.write(df.head())    
 
-# add a drop down list
-option = st.selectbox(
-    "How would you like to be contacted?",
-    ('Email', 'Home phone', 'Mobile phone')
-)
+# display the number of rows and columns from the selected data
+st.write('Nummber of rows:', df.shape[0])
+st.write('Nummber of columns:', df.shape[1])
 
-# add a drop down list on the left sidebar
-option = st.sidebar.selectbox(
-    "How would you like to be contacted?",
-    ('Email', 'Home phone', 'Mobile phone')
-)
+# display the column of selected data with thir datatype
+st.write('Column names and data types:', df.dtypes)                                     
 
-# add your whatsapp number
-st.sidebar.text_input('Enter your whatsapp number')
+# print the null values if those are > 0
+if df.isnull().sum().sum() > 0:
+    st.write('Null values:', df.isnull().sum())
+else:
+    st.write('No null')    
 
-# add a file uploader
-upload_file = st.sidebar.file_uploader('Choose a CSV file', type="csv")
