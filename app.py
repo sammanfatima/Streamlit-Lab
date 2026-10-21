@@ -1,6 +1,7 @@
 import streamlit as st
 import seaborn as sns
-import numpy as pd
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -35,8 +36,8 @@ if uploaded_file is not None:
 st.write(df.head())    
 
 # display the number of rows and columns from the selected data
-st.write('Nummber of rows:', df.shape[0])
-st.write('Nummber of columns:', df.shape[1])
+st.write('Number of rows:', df.shape[0])
+st.write('Number of columns:', df.shape[1])
 
 # display the column of selected data with thir datatype
 st.write('Column names and data types:', df.dtypes)                                     
@@ -47,3 +48,26 @@ if df.isnull().sum().sum() > 0:
 else:
     st.write('No null')    
 
+# display the summary statistics of the selected data    
+st.write('Summary statistic:', df.describe())
+
+# create a pairplot
+st.subheader('Pairplot')
+
+# select the column to be used as hue in pairplot
+hue_column = st.selectbox('Selcet a column to be used as hue', df.columns)
+st.pyplot(sns.pairplot(df, hue=hue_column))
+
+# create a heatmap
+st.subheader('Heatmap')
+# select the columns which are numeric and then create a corr_matix
+numeric_columns = df.select_dtypes(include=np.number).columns
+corr_matrix = df[numeric_columns].corr()
+
+from plotly import graph_objects as go
+# convert the seaborn heatmap plot to a plotly figure
+heatmap_fig = go.Figure(data=go.Heatmap(z=corr_matrix.values,
+x=corr_matrix.columns,
+y=corr_matrix.columns,
+colorscale='Viridis'))
+st.plotly_chart(heatmap_fig)
